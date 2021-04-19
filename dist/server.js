@@ -9,7 +9,7 @@ var morgan_1 = __importDefault(require("morgan"));
 var cors_1 = __importDefault(require("cors"));
 var typeorm_1 = require("typeorm");
 var routes_1 = __importDefault(require("./routes"));
-var PORT = 1338;
+var PORT = 3001;
 var app = express_1.default();
 typeorm_1.createConnection();
 // Middlewares

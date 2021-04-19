@@ -1,11 +1,11 @@
 {
   "type": "postgres",
-  "url": "postgres://gitpod:gitpod@localhost/PostgreSQL",
+  "url": "postgres://gitpod:gitpod@localhost/example",
   "host": "localhost",
   "port": "5432",
   "username": "gitpod",
   "password": "gitpod",
-  "database": "PostgreSQL",
+  "database": "example",
   "entities": ["dist/entity/**/*.js"],
   "logging": false,
   "synchronize": true
