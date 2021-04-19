@@ -34,4 +34,6 @@ RUN mkdir -p ~/.apache-bin \
   && printf "#!/bin/bash\napachectl restart" > ~/.apache-bin/apache_restart \
   && chmod +x ~/.apache-bin/*
 
+RUN npm i typescript -g
+
 RUN printf "\n# Auto-start Apache2 server.\napache_start > /dev/null\n" >> ~/.bashrc

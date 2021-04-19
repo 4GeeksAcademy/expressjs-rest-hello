@@ -2,21 +2,16 @@
 image: 
   file: .gitpod.dockerfile
 ports: 
-  - 
-    onOpen: ignore
-    port: 3000
-  - 
-    onOpen: ignore
-    port: 3035
-  - 
-    onOpen: ignore
-    port: 5432
-  - 
-    onOpen: ignore
-    port: 6379
-  - 
-    onOpen: ignore
-    port: 9200
-  - 
-    onOpen: ignore
-    port: 9300
+    - port: 3000
+      onOpen: open-browser
+    - port: 3001
+      onOpen: open-preview
+    - port: 5432
+      onOpen: ignore
+tasks:
+    - init: >
+        psql -U gitpod -c 'CREATE DATABASE example;' &&
+        psql -U gitpod -c 'CREATE EXTENSION unaccent;' -d example
+    - command: >
+        npm install
+      openMode: split-right

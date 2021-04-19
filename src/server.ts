@@ -6,7 +6,7 @@ import { Connection, createConnection } from 'typeorm';
 
 import userRoutes from './routes'
 
-const PORT:number = 1338;
+const PORT:number = 3001;
 const app = express();
 createConnection();
 
