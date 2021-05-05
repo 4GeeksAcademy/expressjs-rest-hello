@@ -17,7 +17,7 @@ export const renderRoutes = (_app: any, url: string) => {
 			endpoints.push(`${e}: ${e == 'GET' && !item.path.includes(":") ? `<a href="${item.path}">${item.path}</a>`:item.path}`)
 		})
 		return endpoints
-	}).flat().map((item: string) => `<li>${item}</li>`)
+	}).flat().filter((e:any) => !e.includes("admin/") && !e.includes('<a href="/">')).map((item: string) => `<li>${item}</li>`)
 
 	return `
 		<h1>Welcome to your API</h1>

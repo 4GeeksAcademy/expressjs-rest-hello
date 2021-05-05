@@ -1,10 +1,22 @@
-# Boilerplate with typeOrm, typeScript, nodejs, Expressjs
+# Boilerplate with 
+
+🍬 Technologies: typeOrm, typeScript, nodejs, Expressjs, postgres
 
 [![Open in GitPod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/mortegac/4geeks_boilerplate_nodejs)
 
-## 
+## Migrations
 
+1. Generate a new migration file after changes were made to the models:
 
+```bash
+$ typeorm migration:generate -n <pick_a_migration_name>
+```
+
+2. Run your all of your pending migrations:
+
+```bash
+$ typeorm migration:run
+```
 
 
 

@@ -1,7 +1,7 @@
-import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, OneToMany, BaseEntity} from 'typeorm';
 
 @Entity()
-export class User {
+export class User extends BaseEntity{
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,8 +14,8 @@ export class User {
 	@Column()
   email: string;
 
-  @Column()
-  is_active: boolean;
+  @Column({ nullable: true })
+  email_validated: boolean;
 
   // @OneToMany(() => Photo, photo => photo.user)
   // photos: Photo[];

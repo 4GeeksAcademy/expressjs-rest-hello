@@ -1,0 +1,12 @@
+"use strict";
+exports.__esModule = true;
+var express_1 = require("express");
+var utils_1 = require("./utils");
+var actions_1 = require("./actions");
+var router = express_1.Router();
+router.get('/user', utils_1.safe(actions_1.getUsers));
+router.get('/user/:id', actions_1.getUser);
+router.post('/user', utils_1.safe(actions_1.createUser));
+router.put('/user/:id', actions_1.updateUser);
+router["delete"]('/user/:id', actions_1.deleteUser);
+exports["default"] = router;
