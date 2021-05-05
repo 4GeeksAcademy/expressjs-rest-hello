@@ -1,2 +1,2 @@
 FROM gitpod/workspace-postgres
-RUN npm i typescript typeorm -g
+RUN npm i typescript -g && npm i typeorm -g
