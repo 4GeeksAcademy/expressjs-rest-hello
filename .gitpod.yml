@@ -10,6 +10,7 @@ ports:
       onOpen: ignore
 tasks:
     - init: >
+        (cp -n .env.example .env || true) &&
         psql -U gitpod -c 'CREATE DATABASE example;' &&
         psql -U gitpod -c 'CREATE EXTENSION unaccent;' -d example
     - command: >
