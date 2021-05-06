@@ -17,10 +17,7 @@ export default async (rootPath: string = '/admin') => {
         rootPath,
     })
     
-    let router = Router();
-    if(process.env.NODE_ENV === 'development'){
-        router = AdminBroExpress.buildRouter(adminBro)
-        console.log("Setting up the admin interface...")
-    } 
+    const router = AdminBroExpress.buildRouter(adminBro)
+    console.log("Setting up the admin interface...")
     return router
 }
