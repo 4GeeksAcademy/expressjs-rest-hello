@@ -6,7 +6,7 @@ module.exports = {
 	url: process.env.DATABASE_URL,
 	entities: process.env.NODE_ENV === 'development' ? ["./src/entities/*.ts"] : ["./dist/entities/*.js"],
 	logging: false,
-    synchronize: process.env.NODE_ENV === 'development',
+    // synchronize: process.env.NODE_ENV === 'development',
     migrations: ["./src/migrations/*.js"],
     cli: {
         "migrationsDir": "./src/migrations"

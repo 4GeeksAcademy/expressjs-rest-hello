@@ -5,7 +5,6 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { createConnection } from 'typeorm';
 import { url, renderRoutes } from "./utils"
-import setupAdmin from "./admin"
 import userRoutes from './routes'
 
 const PORT:number = 3001;
@@ -26,14 +25,8 @@ app.use(userRoutes);
 // render home website with usefull information for students
 app.get('/', (req, res) => res.status(404).send(renderRoutes(app, PUBLIC_URL)))
 
-// add admin interface for database administration
-setupAdmin('/admin')
-	.then((router) => {
-		// add all admin routes like /admin, 
-		app.use('/admin', router)
-		// default empty route for 404
-		app.use( (req, res) => res.status(404).json({ "message": "Not found" }))
-	})
+// default empty route for 404
+app.use( (req, res) => res.status(404).json({ "message": "Not found" }))
 
 // start the express server, listen to requests on PORT
 app.listen(PORT , () => 
