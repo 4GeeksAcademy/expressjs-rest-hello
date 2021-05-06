@@ -5,8 +5,14 @@ import { Exception } from './utils';
 
 
 export const getUsers = async (req: Request, res: Response): Promise<Response> =>{
+	try{
 		const users = await getRepository(User).find();
 		return res.json(users);
+	}
+	catch(error){
+		console.error(error)
+		throw error
+	}
 }
 
 export const getUser = async (req: Request, res: Response): Promise<Response> =>{

@@ -10,25 +10,30 @@ var morgan_1 = __importDefault(require("morgan"));
 var cors_1 = __importDefault(require("cors"));
 var typeorm_1 = require("typeorm");
 var utils_1 = require("./utils");
-var dotenv_1 = __importDefault(require("dotenv"));
+var admin_1 = __importDefault(require("./admin"));
 var routes_1 = __importDefault(require("./routes"));
-dotenv_1["default"].config(); // load .env variables
 var PORT = 3001;
 var PUBLIC_URL = utils_1.url(PORT);
 var app = express_1["default"]();
-var connection = typeorm_1.createConnection();
+// create a database connection based on the ./ormconfig.js file
+var connectionPromess = typeorm_1.createConnection();
 // Middlewares
-app.use(cors_1["default"]());
-app.use(express_1["default"].json());
-app.use(morgan_1["default"]('dev'));
-// Routes
+app.use(cors_1["default"]()); //disable CORS validations
+app.use(express_1["default"].json()); // the API will be JSON based for serialization
+app.use(morgan_1["default"]('dev')); //logging
+// Import routes from ./src/routes.ts file
 app.use(routes_1["default"]);
-app.get('/', function (req, res) {
-    res.status(404).send(utils_1.renderRoutes(app, PUBLIC_URL));
+// render home website with usefull information for students
+app.get('/', function (req, res) { return res.status(404).send(utils_1.renderRoutes(app, PUBLIC_URL)); });
+// add admin interface for database administration
+admin_1["default"]('/admin')
+    .then(function (router) {
+    // add all admin routes like /admin, 
+    app.use('/admin', router);
+    // default empty route for 404
+    app.use(function (req, res) { return res.status(404).json({ "message": "Not found" }); });
 });
-app.use(function (req, res) {
-    res.status(404).json({ "message": "Not found" });
-});
+// start the express server, listen to requests on PORT
 app.listen(PORT, function () {
     return console.info("==> \uD83D\uDE0E Listening on port " + PORT + ".\n\tOpen " + PUBLIC_URL + " in your browser.");
 });

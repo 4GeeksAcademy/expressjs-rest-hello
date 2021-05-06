@@ -72,7 +72,7 @@ var renderRoutes = function (_app, url) {
             endpoints.push(e + ": " + (e == 'GET' && !item.path.includes(":") ? "<a href=\"" + item.path + "\">" + item.path + "</a>" : item.path));
         });
         return endpoints;
-    }).flat().map(function (item) { return "<li>" + item + "</li>"; });
+    }).flat().filter(function (e) { return !e.includes("admin/") && !e.includes('<a href="/">'); }).map(function (item) { return "<li>" + item + "</li>"; });
     return "\n\t\t<h1>Welcome to your API</h1>\n\t\t<input style=\"padding: 5px; width: 100%; max-width: 800px;\" type=\"text\" value=\"" + url + "\" />\n\t\t<p>These are the endpoints you have developed so far</p>\n\t\t<ul>" + routesHTML.sort().join('') + "</ul>\n\t";
 };
 exports.renderRoutes = renderRoutes;

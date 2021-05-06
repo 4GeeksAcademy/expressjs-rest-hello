@@ -1,9 +1,9 @@
 import AdminBro from 'admin-bro'
-import {Express} from "express"
 import { createConnection } from 'typeorm';
 import AdminBroTypeorm = require('@admin-bro/typeorm')
 import AdminBroExpress from '@admin-bro/express'
 import {User} from "./entities/User"
+import {Router} from "express"
 
 
 export default async (rootPath: string = '/admin') => {
@@ -12,12 +12,15 @@ export default async (rootPath: string = '/admin') => {
     
     AdminBro.registerAdapter(AdminBroTypeorm)
     const adminBro = new AdminBro({
-        resources: [User],
+        // resources: [User],
         databases: [con],
         rootPath,
     })
     
-    const router = AdminBroExpress.buildRouter(adminBro)
-    console.log("Setup the admin...", adminBro.options.rootPath)
+    let router = Router();
+    if(process.env.NODE_ENV === 'development'){
+        router = AdminBroExpress.buildRouter(adminBro)
+        console.log("Setting up the admin interface...")
+    } 
     return router
 }

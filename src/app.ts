@@ -5,11 +5,9 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { createConnection } from 'typeorm';
 import { url, renderRoutes } from "./utils"
-import dotenv from 'dotenv';
 import setupAdmin from "./admin"
 import userRoutes from './routes'
 
-dotenv.config()// load .env variables
 const PORT:number = 3001;
 const PUBLIC_URL = url(PORT)
 const app = express();

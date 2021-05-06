@@ -41,20 +41,13 @@ var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la bas
 var User_1 = require("./entities/User");
 var utils_1 = require("./utils");
 var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, error_1;
+    var users;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, typeorm_1.getRepository(User_1.User).find()];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(User_1.User).find()];
             case 1:
                 users = _a.sent();
                 return [2 /*return*/, res.json(users)];
-            case 2:
-                error_1 = _a.sent();
-                console.error(error_1);
-                throw error_1;
-            case 3: return [2 /*return*/];
         }
     });
 }); };
@@ -92,7 +85,7 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 }); };
 exports.createUser = createUser;
 var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, results, error_2;
+    var user, results, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -108,8 +101,8 @@ var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                 return [2 /*return*/, res.json(results)];
             case 3: return [2 /*return*/, res.status(404).json({ message: "Not User found" })];
             case 4:
-                error_2 = _a.sent();
-                return [2 /*return*/, res.status(500).json({ message: error_2 })];
+                error_1 = _a.sent();
+                return [2 /*return*/, res.status(500).json({ message: error_1 })];
             case 5: return [2 /*return*/];
         }
     });
