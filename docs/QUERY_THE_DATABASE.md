@@ -1,9 +1,3 @@
-# Repository APIs
-
-* [Repository API](#repository-api)
-* [TreeRepository API](#treerepository-api)
-* [MongoRepository API](#mongorepository-api)
-
 ## `Repository` API
 
 * `manager` - The `EntityManager` used by this repository.
