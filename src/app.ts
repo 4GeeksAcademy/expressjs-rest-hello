@@ -1,11 +1,12 @@
+import 'express-async-errors'//must always be the first, ideal for error handling
 import 'reflect-metadata';
-import 'express-async-errors'
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import { createConnection } from 'typeorm';
 import { url, renderRoutes } from "./utils"
 import userRoutes from './routes'
+import jwt from 'jwt-express'
 
 const PORT:number = 3001;
 const PUBLIC_URL = url(PORT)
@@ -19,6 +20,15 @@ app.use(cors()) //disable CORS validations
 app.use(express.json()) // the API will be JSON based for serialization
 app.use(morgan('dev')); //logging
 
+// add two middlewars to handle request with JWT token
+app.use(jwt.init('secret'))
+app.use(((err: any, req: any, res: any, next: any) => {
+	if (err) console.error(err);
+	if (err.name === 'UnauthorizedError') {
+	  res.status(401).json({ status: 'invalid token' });
+	}
+	next();
+}))
 // Import routes from ./src/routes.ts file
 app.use(userRoutes);
 

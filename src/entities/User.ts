@@ -1,23 +1,28 @@
-import {Entity, Column, PrimaryGeneratedColumn, OneToMany, BaseEntity} from 'typeorm';
+import {
+  Entity, Column, PrimaryGeneratedColumn, ManyToMany, 
+  BaseEntity, JoinTable
+} from 'typeorm';
 
+import {Planet} from "./Planet"
 @Entity()
 export class User extends BaseEntity{
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  firstname: string;
+  first_name: string;
 
   @Column()
-  lastname: string;
+  last_name: string;
 
-	@Column()
+  @Column({unique: true})
   email: string;
 
-  @Column({ nullable: true })
-  email_validated: boolean;
+  @Column({unique: true})
+  password: string;
 
-  // @OneToMany(() => Photo, photo => photo.user)
-  // photos: Photo[];
+  @ManyToMany(() => Planet)
+  @JoinTable()
+  planets: Planet[];
   
 }

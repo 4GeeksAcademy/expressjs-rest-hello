@@ -1,4 +1,3 @@
---- 
 image: 
   file: .gitpod.dockerfile
 ports: 
@@ -11,8 +10,12 @@ ports:
 tasks:
     - init: >
         (cp -n .env.example .env || true) &&
-        psql -U gitpod -c 'CREATE DATABASE example;' &&
+        psql -U gitpod -c 'DROP DATABASE example;' &&
         psql -U gitpod -c 'CREATE EXTENSION unaccent;' -d example
     - command: >
         npm install
       openMode: split-right
+
+vscode:
+  extensions:
+    - cweijan.vscode-database-client2

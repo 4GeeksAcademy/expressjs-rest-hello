@@ -1,14 +1,15 @@
-const dotenv = require('dotenv');
-dotenv.config()// load .env variables
+const dotenv = require('dotenv-override');
+dotenv.config({override: true})// load .env variables
 
+console.log("process.env.DATABASE_URL", process.env.DATABASE_URL)
 module.exports = {
 	type: "postgres",
 	url: process.env.DATABASE_URL,
-	entities: process.env.NODE_ENV === 'development' ? ["./src/entities/*.ts"] : ["./dist/entities/*.js"],
+	entities: ["./dist/entities/*.js"],
 	logging: false,
-    // synchronize: process.env.NODE_ENV === 'development',
-    migrations: ["./src/migrations/*.js"],
+    synchronize: process.env.NODE_ENV === 'development',
+    migrations: ["./dist/migrations/*.js"],
     cli: {
-        "migrationsDir": "./src/migrations"
+        "migrationsDir": "./dist/migrations"
     }
 }
