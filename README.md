@@ -28,7 +28,7 @@ Note: please note that the `save` function must always be called before your act
 ```js
 export const getUser = async (req: Request, res: Response): Promise<Response> =>{
 	
-	const users = await getRepository(User).findOne(req.params.id);
+	const users = await getRepository(Users).findOne(req.params.id);
 	return res.json(users);
 }
 ```

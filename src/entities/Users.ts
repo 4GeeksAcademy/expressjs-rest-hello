@@ -5,7 +5,7 @@ import {
 
 import {Planet} from "./Planet"
 @Entity()
-export class User extends BaseEntity{
+export class Users extends BaseEntity{
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,7 +18,7 @@ export class User extends BaseEntity{
   @Column({unique: true})
   email: string;
 
-  @Column({unique: true})
+  @Column()
   password: string;
 
   @ManyToMany(() => Planet)

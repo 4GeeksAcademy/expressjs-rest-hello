@@ -39,38 +39,72 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.deleteUser = exports.updateUser = exports.createPlanet = exports.addToFavorite = exports.createUser = exports.getUser = exports.getPlanets = exports.getUsers = exports.login = void 0;
+exports.deleteUser = exports.updateUser = exports.createPlanet = exports.addToFavorite = exports.getMe = exports.getUser = exports.getPlanets = exports.getUsers = exports.createUser = exports.createToken = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
-var User_1 = require("./entities/User");
+var Users_1 = require("./entities/Users");
 var Planet_1 = require("./entities/Planet");
 var utils_1 = require("./utils");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var email, password, userRepo, user, token;
+var createToken = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userRepo, user, token;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                email = req.body.email;
-                password = req.body.password;
-                return [4 /*yield*/, typeorm_1.getRepository(User_1.User)];
+                if (!req.body.email)
+                    throw new utils_1.Exception("Please specify an email on your request body", 400);
+                if (!req.body.password)
+                    throw new utils_1.Exception("Please specify a password on your request body", 400);
+                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users)
+                    // We need to validate that a user with this email and password exists in the DB
+                ];
             case 1:
                 userRepo = _a.sent();
-                return [4 /*yield*/, userRepo.findOne({ email: email, password: password })];
+                return [4 /*yield*/, userRepo.findOne({ where: { email: req.body.email, password: req.body.password } })];
             case 2:
                 user = _a.sent();
                 if (!user)
                     throw new utils_1.Exception("Invalid email or password", 401);
                 token = jsonwebtoken_1["default"].sign({ user: user }, process.env.JWT_KEY);
+                // return the user and the recently created token to the client
                 return [2 /*return*/, res.json({ user: user, token: token })];
         }
     });
 }); };
-exports.login = login;
+exports.createToken = createToken;
+var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var userRepo, user, newUser, results;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                // important validations to avoid ambiguos errors, the client needs to understand what went wrong
+                if (!req.body.first_name)
+                    throw new utils_1.Exception("Please provide a first_name");
+                if (!req.body.last_name)
+                    throw new utils_1.Exception("Please provide a last_name");
+                if (!req.body.email)
+                    throw new utils_1.Exception("Please provide an email");
+                if (!req.body.password)
+                    throw new utils_1.Exception("Please provide a password");
+                userRepo = typeorm_1.getRepository(Users_1.Users);
+                return [4 /*yield*/, userRepo.findOne({ where: { email: req.body.email } })];
+            case 1:
+                user = _a.sent();
+                if (user)
+                    throw new utils_1.Exception("Users already exists with this email");
+                newUser = typeorm_1.getRepository(Users_1.Users).create(req.body);
+                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).save(newUser)];
+            case 2:
+                results = _a.sent();
+                return [2 /*return*/, res.json(results)];
+        }
+    });
+}); };
+exports.createUser = createUser;
 var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var users;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(User_1.User).find()];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).find()];
             case 1:
                 users = _a.sent();
                 return [2 /*return*/, res.json(users)];
@@ -94,7 +128,7 @@ var getUser = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
     var user;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(User_1.User).findOne(req.params.id, { relations: ["planets"] })];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).findOne(req.params.id, { relations: ["planets"] })];
             case 1:
                 user = _a.sent();
                 if (user)
@@ -104,26 +138,16 @@ var getUser = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
     });
 }); };
 exports.getUser = getUser;
-var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var newUser, results;
+var getMe = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if (!req.body.first_name)
-                    throw new utils_1.Exception("Please provide a first_name");
-                if (!req.body.last_name)
-                    throw new utils_1.Exception("Please provide a last_name");
-                if (!req.body.email)
-                    throw new utils_1.Exception("Please provide an email");
-                newUser = typeorm_1.getRepository(User_1.User).create(req.body);
-                return [4 /*yield*/, typeorm_1.getRepository(User_1.User).save(newUser)];
-            case 1:
-                results = _a.sent();
-                return [2 /*return*/, res.json(results)];
-        }
+        // Notice that the user IS NOT coming from the DB, the user object was decoded from the token
+        // you can retrive the current user on any privite endpoint by typing "req.user"
+        console.log("This is the logged in user calling this endpoint", req.user);
+        //                  ⬇ not comming from the BD
+        return [2 /*return*/, res.json(req.user)];
     });
 }); };
-exports.createUser = createUser;
+exports.getMe = getMe;
 var addToFavorite = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var planetId, users, planetRepo, planet, result;
     return __generator(this, function (_a) {
@@ -171,13 +195,13 @@ var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     var user, results;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(User_1.User).findOne(req.params.id)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).findOne(req.params.id)];
             case 1:
                 user = _a.sent();
                 if (!user)
-                    return [2 /*return*/, res.status(404).json({ message: "Not User found" })];
-                typeorm_1.getRepository(User_1.User).merge(user, req.body); // Hace un merge de los datos existentes con los que se reciben a través de body
-                return [4 /*yield*/, typeorm_1.getRepository(User_1.User).save(user)];
+                    return [2 /*return*/, res.status(404).json({ message: "Not Users found" })];
+                typeorm_1.getRepository(Users_1.Users).merge(user, req.body); // Hace un merge de los datos existentes con los que se reciben a través de body
+                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).save(user)];
             case 2:
                 results = _a.sent();
                 return [2 /*return*/, res.json(results)];
@@ -189,7 +213,7 @@ var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     var users;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, typeorm_1.getRepository(User_1.User)["delete"](req.params.id)];
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users)["delete"](req.params.id)];
             case 1:
                 users = _a.sent();
                 return [2 /*return*/, res.json(users)];

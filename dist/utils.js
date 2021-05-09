@@ -14,6 +14,25 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -54,10 +73,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.Exception = exports.safe = exports.renderRoutes = exports.url = void 0;
-var express_list_endpoints_1 = __importDefault(require("express-list-endpoints"));
+exports.Exception = exports.safe = exports.renderIndex = exports.url = void 0;
+var path = __importStar(require("path")); // node.js internal module usefull to get file paths
+var express_list_endpoints_1 = __importDefault(require("express-list-endpoints")); //just a function that retrieves all the API routes
+var ejs_1 = __importDefault(require("ejs")); //template engine
+// We need to know what will be the API host
+// in a local computer is always "localhost" 
+// but in gitpod if varies depending on the workspace URL
 var url = function (port) {
     var publicUrl = "http://localhost:" + port;
+    // Gitpod has internal environment variables https://www.gitpod.io/docs/environment-variables/
+    // the Workspace URL is one of them (thank God)
     if (process.env.GITPOD_WORKSPACE_URL) {
         var _a = process.env.GITPOD_WORKSPACE_URL.split('://'), schema = _a[0], host = _a[1];
         publicUrl = "https://" + port + "-" + host;
@@ -65,17 +91,38 @@ var url = function (port) {
     return publicUrl;
 };
 exports.url = url;
-var renderRoutes = function (_app, url) {
-    var routesHTML = express_list_endpoints_1["default"](_app).map(function (item) {
-        var endpoints = [];
-        item.methods.forEach(function (e) {
-            endpoints.push(e + ": " + (e == 'GET' && !item.path.includes(":") ? "<a href=\"" + item.path + "\">" + item.path + "</a>" : item.path));
-        });
-        return endpoints;
-    }).flat().filter(function (e) { return !e.includes("admin/") && !e.includes('<a href="/">'); }).map(function (item) { return "<li>" + item + "</li>"; });
-    return "\n\t\t<h1>Welcome to your API</h1>\n\t\t<input style=\"padding: 5px; width: 100%; max-width: 800px;\" type=\"text\" value=\"" + url + "\" />\n\t\t<p>These are the endpoints you have developed so far</p>\n\t\t<ul>" + routesHTML.sort().join('') + "</ul>\n\t";
-};
-exports.renderRoutes = renderRoutes;
+// this function creates the HTML/CSS for the API Index home page
+var renderIndex = function (_app, url) { return __awaiter(void 0, void 0, void 0, function () {
+    var routes, data;
+    return __generator(this, function (_a) {
+        routes = express_list_endpoints_1["default"](_app).map(function (item) {
+            var endpoints = [];
+            item.methods.forEach(function (e) {
+                endpoints.push({ method: e, path: item.path });
+            });
+            return endpoints;
+        }).flat()
+            //remove the home page rout because its obvious
+            .filter(function (r) { return r.path != "/"; });
+        data = {
+            host: url,
+            routes: routes,
+            rigo: "https://github.com/4GeeksAcademy/expressjs-rest-hello/blob/master/docs/assets/rigo-baby.jpeg?raw=true",
+            starter: "https://start.4geeksacademy.com/starters/express"
+        };
+        return [2 /*return*/, new Promise(function (resolve, reject) {
+                // use the EJS template engine to generate the HTML/CSS
+                ejs_1["default"].renderFile(path.join(__dirname, "../docs/assets/template.ejs"), data, function (err, result) {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(result);
+                });
+            })];
+    });
+}); };
+exports.renderIndex = renderIndex;
+//.sort((a,b) => a.method > b.method)
 var safe = function (fn) { return function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var fnReturn, err_1;
     return __generator(this, function (_a) {

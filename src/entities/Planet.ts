@@ -1,5 +1,5 @@
 import {Entity, Column, PrimaryGeneratedColumn, ManyToMany, BaseEntity} from 'typeorm';
-import {User} from "./User"
+import {Users} from "./Users"
 @Entity()
 export class Planet extends BaseEntity{
   @PrimaryGeneratedColumn()
@@ -11,7 +11,7 @@ export class Planet extends BaseEntity{
   @Column({ nullable: true })
   picture_url: string;
 
-  @ManyToMany(() => User, user => user.planets)
-  users: User[];
+  @ManyToMany(() => Users, user => user.planets)
+  users: Users[];
 
 }

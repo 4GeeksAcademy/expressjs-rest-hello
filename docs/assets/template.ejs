@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express Boilerplate from 4Geeks Academy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+</head>
+<body>
+    <script>
+        window.onload = function(){
+            let toastElm = document.getElementById('copied')
+            document.getElementById("host").onclick = function() {
+                this.select();
+                document.execCommand('copy');
+                let toast = new bootstrap.Toast(toastElm, {})
+                toast.show()
+            }
+            toastElm.addEventListener('show.bs.toast', function () {
+                toastElm.classList.remove("d-none")
+            })
+            toastElm.addEventListener('hide.bs.toast', function () {
+                toastElm.classList.add("d-none")
+            })
+        }
+    </script>
+    <div style="text-align: center;">
+        <img style="max-height: 80px" src='<%= rigo %>' />
+        <h1>Rigo welcomes you to your API!!</h1>
+        <div style="max-width: 500px; margin: auto;">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">API Host:</span>
+                </div>
+                <input id="host" type="text" class="form-control" placeholder="Host URL" aria-label="Host" aria-describedby="basic-addon1" value="<%= host %>">
+            </div>
+            <div id="copied" class="toast align-items-center text-white bg-success border-0 d-none margin-auto w-100" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        😃 The API Host has been copied to the 📋 clipboard.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p>Start working on your project by following the <a href="<%= starter %>" target="_blank">Quick Start</a></p>
+        <p>Remember to specify a real endpoint path like: </p>
+        <ul style="text-align: left;">
+            <% routes.forEach(r => { %>
+                <li><%- r.method == "GET" ? `<a href="${r.path}">GET ${r.path}</a>`: r.method+" "+r.path %></li>
+            <% }) %>
+        </ul>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</body>
+</html>
