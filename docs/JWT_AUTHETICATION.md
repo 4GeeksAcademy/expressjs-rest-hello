@@ -77,6 +77,25 @@ app.get('/private', (req, res) => {
 ```
 
 
-## 3) Get the authenticated user on any private route
+## 3) Get the authenticated user
 
-We are done, but if only logged in users are supposed to call our private endpoints, then we need a way to know how is calling them, for example:
+We are done, but if only logged in users are supposed to call our private endpoints, then we need a way to know who is calling them, for example we can use `req.user` from now on, to identify request user):
+
+```js
+export const getMe = async (req: Request, res: Response): Promise<Response> =>{
+	
+	const users = await getRepository(Users).find({ where: });
+	//                  ⬇ not comming from the BD
+	return res.json(req.user);
+}
+```
+
+Or we can use that info and get more information form the requester from the database.
+```js
+export const getMe = async (req: Request, res: Response): Promise<Response> =>{
+
+
+	//                  ⬇ not comming from the BD
+	return res.json(req.user);
+}
+```

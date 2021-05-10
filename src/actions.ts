@@ -54,7 +54,8 @@ export const getPlanets = async (req: Request, res: Response): Promise<Response>
 export const getUser = async (req: Request, res: Response): Promise<Response> =>{
 	
 	const user = await getRepository(Users).findOne(req.params.id, { relations: ["planets"] });
-	if(user) console.log("users", user);
+	if(!user) throw new Exception("User not found", 404)
+
 	return res.json(user);
 }
 
@@ -66,41 +67,73 @@ export const getMe = async (req: Request, res: Response): Promise<Response> =>{
 	return res.json(req.user);
 }
 
-export const addToFavorite = async (req: Request, res:Response): Promise<Response> =>{
+export const createPlanet = async (req: Request, res:Response): Promise<Response> =>{
 
-	const planetId = req.params.id;
-
-	const users = req.body.users;
-	delete req.body['users']
+	if(!req.body.name) throw new Exception("Please provide the planet name")
 
 	const planetRepo = getRepository(Planet);
 	const planet = planetRepo.create(req.body as ObjectLiteral);  //Creo un usuario
-	
-	//add users from the req.body
-	planet.users = users; 
 	
 	const result = await planetRepo.save(planet); //Grabo el nuevo usuario 
 	
 	return res.json(result);
 }
 
-export const createPlanet = async (req: Request, res:Response): Promise<Response> =>{
 
-	if(!req.body.name) throw new Exception("Please provide a firs_tname")
-	if(!req.body.users) throw new Exception("Please provide a the planet users")
+export const addFavoritePlanet = async (req: Request, res:Response): Promise<Response> =>{
 
-	const users = req.body.users;
-	delete req.body['users']
+	const planet_id = parseInt(req.params.planet_id)
+	
+	/**
+	 * We can guess the current user from the authentication, more information about that here:
+	 * get-the-authenticated-user
+	*/
+	if(!req.user) throw new Exception("No user was found on the session token")
+	const user_id = (req.user as ObjectLiteral).id
+
+	const usersRepo = getRepository(Users);
+	let user = await usersRepo.findOne(user_id, { relations: ["planets"] });  
+	if(!user) throw new Exception(`Authenticated user with id ${user_id} not found`, 404)
 
 	const planetRepo = getRepository(Planet);
-	const planet = planetRepo.create(req.body as ObjectLiteral);  //Creo un usuario
+	let planet = await planetRepo.findOne(planet_id);  
+	if(!planet) throw new Exception(`Planet with id ${planet_id} not found`, 404)
+
+	if(user.planets.find(p => p.id === planet_id)) throw new Exception("The user already has this planet as favorite")
+
+	user.planets = user.planets.concat(planet); 
 	
-	//add users from the req.body
-	planet.users = users; 
+	await usersRepo.save(user); //Grabo el nuevo usuario 
+
+	return res.json(user.planets);
+}
+
+export const removeFavoritePlanet = async (req: Request, res:Response): Promise<Response> =>{
+
+	const planet_id = parseInt(req.params.planet_id)
 	
-	const result = await planetRepo.save(planet); //Grabo el nuevo usuario 
+	/**
+	 * We can guess the current user from the authentication, more information about that here:
+	 * get-the-authenticated-user
+	*/
+	if(!req.user) throw new Exception("No user was found on the session token")
+	const user_id = (req.user as ObjectLiteral).id
+
+	const usersRepo = getRepository(Users);
+	let user = await usersRepo.findOne(user_id, { relations: ["planets"] });  
+	if(!user) throw new Exception(`Authenticated user with id ${user_id} not found`, 404)
+
+	const planetRepo = getRepository(Planet);
+	let planet = await planetRepo.findOne(planet_id);  
+	if(!planet) throw new Exception(`Planet with id ${planet_id} not found`, 404)
+
+	// only keep each user planet if the given planet does not exist or if
+	// given planet.id is different form the user's planet's id's
+	user.planets = user.planets.filter(p => !planet || p.id != planet.id); 
 	
-	return res.json(result);
+	await usersRepo.save(user); //Grabo el nuevo usuario 
+
+	return res.json(user.planets);
 }
 
 

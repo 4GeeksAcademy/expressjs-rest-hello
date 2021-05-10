@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.deleteUser = exports.updateUser = exports.createPlanet = exports.addToFavorite = exports.getMe = exports.getUser = exports.getPlanets = exports.getUsers = exports.createUser = exports.createToken = void 0;
+exports.deleteUser = exports.updateUser = exports.removeFavoritePlanet = exports.addFavoritePlanet = exports.createPlanet = exports.getMe = exports.getUser = exports.getPlanets = exports.getUsers = exports.createUser = exports.createToken = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var Planet_1 = require("./entities/Planet");
@@ -131,8 +131,8 @@ var getUser = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
             case 0: return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).findOne(req.params.id, { relations: ["planets"] })];
             case 1:
                 user = _a.sent();
-                if (user)
-                    console.log("users", user);
+                if (!user)
+                    throw new utils_1.Exception("User not found", 404);
                 return [2 /*return*/, res.json(user)];
         }
     });
@@ -148,41 +148,15 @@ var getMe = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
     });
 }); };
 exports.getMe = getMe;
-var addToFavorite = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var planetId, users, planetRepo, planet, result;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                planetId = req.params.id;
-                users = req.body.users;
-                delete req.body['users'];
-                planetRepo = typeorm_1.getRepository(Planet_1.Planet);
-                planet = planetRepo.create(req.body);
-                //add users from the req.body
-                planet.users = users;
-                return [4 /*yield*/, planetRepo.save(planet)];
-            case 1:
-                result = _a.sent();
-                return [2 /*return*/, res.json(result)];
-        }
-    });
-}); };
-exports.addToFavorite = addToFavorite;
 var createPlanet = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, planetRepo, planet, result;
+    var planetRepo, planet, result;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 if (!req.body.name)
-                    throw new utils_1.Exception("Please provide a firs_tname");
-                if (!req.body.users)
-                    throw new utils_1.Exception("Please provide a the planet users");
-                users = req.body.users;
-                delete req.body['users'];
+                    throw new utils_1.Exception("Please provide the planet name");
                 planetRepo = typeorm_1.getRepository(Planet_1.Planet);
                 planet = planetRepo.create(req.body);
-                //add users from the req.body
-                planet.users = users;
                 return [4 /*yield*/, planetRepo.save(planet)];
             case 1:
                 result = _a.sent();
@@ -191,6 +165,78 @@ var createPlanet = function (req, res) { return __awaiter(void 0, void 0, void 0
     });
 }); };
 exports.createPlanet = createPlanet;
+var addFavoritePlanet = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var planet_id, user_id, usersRepo, user, planetRepo, planet;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                planet_id = parseInt(req.params.planet_id);
+                /**
+                 * We can guess the current user from the authentication, more information about that here:
+                 * get-the-authenticated-user
+                */
+                if (!req.user)
+                    throw new utils_1.Exception("No user was found on the session token");
+                user_id = req.user.id;
+                usersRepo = typeorm_1.getRepository(Users_1.Users);
+                return [4 /*yield*/, usersRepo.findOne(user_id, { relations: ["planets"] })];
+            case 1:
+                user = _a.sent();
+                if (!user)
+                    throw new utils_1.Exception("Authenticated user with id " + user_id + " not found", 404);
+                planetRepo = typeorm_1.getRepository(Planet_1.Planet);
+                return [4 /*yield*/, planetRepo.findOne(planet_id)];
+            case 2:
+                planet = _a.sent();
+                if (!planet)
+                    throw new utils_1.Exception("Planet with id " + planet_id + " not found", 404);
+                if (user.planets.find(function (p) { return p.id === planet_id; }))
+                    throw new utils_1.Exception("The user already has this planet as favorite");
+                user.planets = user.planets.concat(planet);
+                return [4 /*yield*/, usersRepo.save(user)];
+            case 3:
+                _a.sent(); //Grabo el nuevo usuario 
+                return [2 /*return*/, res.json(user.planets)];
+        }
+    });
+}); };
+exports.addFavoritePlanet = addFavoritePlanet;
+var removeFavoritePlanet = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var planet_id, user_id, usersRepo, user, planetRepo, planet;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                planet_id = parseInt(req.params.planet_id);
+                /**
+                 * We can guess the current user from the authentication, more information about that here:
+                 * get-the-authenticated-user
+                */
+                if (!req.user)
+                    throw new utils_1.Exception("No user was found on the session token");
+                user_id = req.user.id;
+                usersRepo = typeorm_1.getRepository(Users_1.Users);
+                return [4 /*yield*/, usersRepo.findOne(user_id, { relations: ["planets"] })];
+            case 1:
+                user = _a.sent();
+                if (!user)
+                    throw new utils_1.Exception("Authenticated user with id " + user_id + " not found", 404);
+                planetRepo = typeorm_1.getRepository(Planet_1.Planet);
+                return [4 /*yield*/, planetRepo.findOne(planet_id)];
+            case 2:
+                planet = _a.sent();
+                if (!planet)
+                    throw new utils_1.Exception("Planet with id " + planet_id + " not found", 404);
+                // only keep each user planet if the given planet does not exist or if
+                // given planet.id is different form the user's planet's id's
+                user.planets = user.planets.filter(function (p) { return !planet || p.id != planet.id; });
+                return [4 /*yield*/, usersRepo.save(user)];
+            case 3:
+                _a.sent(); //Grabo el nuevo usuario 
+                return [2 /*return*/, res.json(user.planets)];
+        }
+    });
+}); };
+exports.removeFavoritePlanet = removeFavoritePlanet;
 var updateUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var user, results;
     return __generator(this, function (_a) {
