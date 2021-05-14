@@ -8,12 +8,10 @@
  */
 import { Router } from 'express';
 import { safe } from './utils';
-import { createToken, createUser } from './actions';
+import { createUser } from './actions';
 
 const router = Router();
 
-// login route (generates a token if valid email & pass)
-router.post('/token', safe(createToken));
 // signup route, creates a new user in the DB
 router.post('/user', safe(createUser));
 

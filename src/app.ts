@@ -7,7 +7,6 @@ import { createConnection } from 'typeorm';
 import { url, renderIndex } from "./utils"
 import privateRoutes from './private_routes'
 import publicRoutes from './public_routes'
-import jwt, {Options} from 'express-jwt'
 
 const PORT:number = 3001;
 const PUBLIC_URL = url(PORT)
@@ -33,16 +32,11 @@ app.get('/', (req, res) => renderIndex(app, PUBLIC_URL).then(html => res.status(
 // the jwt middleware to influence these enpoints
 app.use(publicRoutes);
 
-// add two middlewars to handle request with JWT token
-let opt: Options = { secret: process.env.JWT_KEY as string, algorithms: ["HS256"] }
-app.use(jwt(opt)) // ⬅ JWT Middleware
-app.use(((err: any, req: any, res: any, next: any) => {
-	if (err) console.error(err);
-	if (err.name === 'UnauthorizedError') { 
-	  res.status(401).json({ status: err.message }); // ⬅ Force the 401 status
-	}
-	next();
-}))
+/**
+ * ⚠️ IMPORTANT
+ * This is the place to include your JWT middleware that will make private routes really private 
+ * you can ready more about it here: https://github.com/4GeeksAcademy/expressjs-rest-hello/blob/master/docs/JWT_AUTHETICATION.md
+ * */
 
 // Import private routes from ./src/private_routes.ts file
 // this line has to be BELOW the JWT middleware to enforce

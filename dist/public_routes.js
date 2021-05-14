@@ -11,8 +11,6 @@ var express_1 = require("express");
 var utils_1 = require("./utils");
 var actions_1 = require("./actions");
 var router = express_1.Router();
-// login route (generates a token if valid email & pass)
-router.post('/token', utils_1.safe(actions_1.createToken));
 // signup route, creates a new user in the DB
 router.post('/user', utils_1.safe(actions_1.createUser));
 exports["default"] = router;
