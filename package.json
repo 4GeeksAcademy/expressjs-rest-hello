@@ -21,7 +21,8 @@
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
     "tsc-watch": "^4.2.9",
-    "typeorm": "^0.2.32"
+    "typeorm": "^0.2.32",
+    "express-list-endpoints": "^5.0.0"
   },
   "devDependencies": {
     "@admin-bro/express": "^3.1.0",
@@ -46,10 +47,16 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=development tsc-watch --project . --onSuccess 'nodemon ./dist/app.js'",
+    "start": "node dist/app.js",
+    "postinstall": "tsc",
+    "watch-node": "nodemon dist/app.js",
+    "watch-ts": "tsc -w ",
     "build": "rm -rf ./dist && tsc --project ./",
     "makemigrations": "typeorm migration:generate -n M && npm run build",
     "migrate": "typeorm migration:run"
+  },
+  "engines": {
+    "node": "14.16.1"
   },
   "keywords": [],
   "author": "Manuel Ortega Carcamo",

@@ -7,9 +7,14 @@ module.exports = {
 	url: process.env.DATABASE_URL,
 	entities: ["./dist/entities/*.js"],
 	logging: false,
-    synchronize: process.env.NODE_ENV === 'development',
+    synchronize: true,
     migrations: ["./dist/migrations/*.js"],
     cli: {
         "migrationsDir": "./dist/migrations"
-    }
-}
+    },
+    // ssl: process.env.NODE_ENV === 'development' ? true : false
+    ssl: process.env.NODE_ENV === 'development' ? false: {
+        require: true,
+          rejectUnauthorized: false,
+        },
+ }
