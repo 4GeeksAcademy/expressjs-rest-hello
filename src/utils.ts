@@ -8,7 +8,7 @@ import { ObjectLiteral } from 'typeorm';
 // We need to know what will be the API host
 // in a local computer is always "localhost" 
 // but in gitpod if varies depending on the workspace URL
-export const url = (port: number) => {
+export const url = (port: string) => {
 	let publicUrl = `http://localhost:${port}`;
 	// Gitpod has internal environment variables https://www.gitpod.io/docs/environment-variables/
 	// the Workspace URL is one of them (thank God)
