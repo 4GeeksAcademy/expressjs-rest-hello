@@ -3,10 +3,13 @@ image:
 ports: 
     - port: 3000
       onOpen: open-browser
+      visibility: public
     - port: 3001
       onOpen: open-preview
+      visibility: public
     - port: 5432
       onOpen: ignore
+      visibility: public
 tasks:
     - init: >
         (cp -n .env.example .env || true) &&
