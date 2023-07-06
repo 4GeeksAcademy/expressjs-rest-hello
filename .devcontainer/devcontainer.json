@@ -13,7 +13,7 @@
 					"*.md": "vscode.markdown.preview.editor"
 				}
 			},
-			"extensions": ["cweijan.vscode-database-client2"]
+			"extensions": ["cweijan.vscode-database-client2", "MS-vsliveshare.vsliveshare"]
 		}
 	},
 
